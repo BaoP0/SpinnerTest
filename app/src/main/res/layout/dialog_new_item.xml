@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/ll_new_item"
+        android:orientation="horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="车辆编号："
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_new_vehicle_name"
+            android:hint="请车辆输入编号"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="北斗卡号："
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_new_vehicle_id"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="8"
+            android:hint="请输入6-8位北斗卡号"/>
+        <TextView
+            android:id="@+id/tv_new_error"
+            android:layout_marginStart="4dp"
+            android:text="请输入6-8位北斗卡号"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="0dp"
+    android:layout_marginRight="0dp"
+    android:baselineAligned="false"
+    android:divider="?android:attr/dividerHorizontal"
+    android:orientation="horizontal"
+    android:showDividers="middle"
+    tools:context=".showContacts.ArmyVehicleActivity">
+
+    <!--
+    This layout is a two-pane layout for the Items
+    master/detail flow.
+    
+    -->
+
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/item_list_vehicle"
+        android:name="com.cetc.spinnertest.ItemListFragment"
+        android:layout_width="@dimen/item_width"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="com.cetc.spinnertest.showContacts.ArmyVehicleActivity"
+        tools:listitem="@layout/item_vehicle" />
+
+    <FrameLayout
+        android:id="@+id/item_detail_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3">
+        <TextView
+            android:id="@+id/tv_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="点击左侧列表，查看详细信息"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:gravity="center"/>
+    </FrameLayout>
+
+</LinearLayout>

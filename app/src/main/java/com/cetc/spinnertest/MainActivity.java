@@ -1,0 +1,155 @@
+package com.cetc.spinnertest;
+
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.cetc.spinnertest.showContacts.ArmyVehicleActivity;
+
+import org.litepal.LitePal;
+import org.litepal.tablemanager.Connector;
+import org.litepal.tablemanager.callback.DatabaseListener;
+
+import java.util.List;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity {
+
+    Spinner spinPlanets;
+    Button btnContacts, btnShow, btnDelete, btnSave, btnShowVehicle;
+    EditText etID, etName;
+    TextView tvDB;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        spinPlanets = (Spinner) findViewById(R.id.spin_city);
+        final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinPlanets.setAdapter(adapter);
+
+        btnContacts = (Button) findViewById(R.id.btn_to_contacts);
+        btnShow = (Button) findViewById(R.id.btn_show);
+        tvDB = (TextView) findViewById(R.id.tv_vehicle);
+        btnDelete = (Button) findViewById(R.id.btn_delete);
+        btnSave = (Button) findViewById(R.id.btn_save);
+        btnShowVehicle = (Button) findViewById(R.id.btn_show_vehicle);
+        etID = (EditText) findViewById(R.id.et_id);
+        etName = (EditText) findViewById(R.id.et_name);
+//        SQLiteDatabase db = Connector.getDatabase();
+        SQLiteDatabase db = LitePal.getDatabase();
+//        ArmyVehicle armyVehicle1 = LitePal.find(ArmyVehicle.class, 1);
+//        if (armyVehicle1 != null ) {
+//            armyVehicle1.setName("车辆11一");
+//            armyVehicle1.saveAsync();
+//        } else {
+//            armyVehicle1 = new ArmyVehicle();
+//
+//            armyVehicle1.setBDSimID(1);
+//            armyVehicle1.setName("车辆11一");
+//            armyVehicle1.saveAsync();
+//        }
+
+        btnContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ItemListActivity.class);
+                startActivity(intent);
+
+//                for (int i = 1; i < 10; i++) {
+//                    ArmyVehicle armyVehicle = new ArmyVehicle();
+//                    armyVehicle.setName("车辆二" + i);
+//
+//                    armyVehicle.setBDSimID(i * 10 + i);
+//                    armyVehicle.save();
+//                }
+//                ArmyVehicle armyVehicle = new ArmyVehicle();
+//                armyVehicle.setName("车辆二" + 1);
+//                armyVehicle.setBDSimID(11);
+//                armyVehicle.save();
+//                if (!armyVehicle.isSaved()) {
+//                    Toast.makeText(MainActivity.this, "此ID已存在", Toast.LENGTH_SHORT).show();
+//                }
+
+            }
+        });
+        LitePal.registerDatabaseListener(new DatabaseListener() {
+            @Override
+            public void onCreate() {
+
+            }
+
+            @Override
+            public void onUpgrade(int oldVersion, int newVersion) {
+
+            }
+        });
+        btnShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                ArmyVehicle armyVehicle = LitePal.find(ArmyVehicle.class, 1);
+                if (armyVehicle == null) {
+                    Toast.makeText(MainActivity.this, "无此ID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                tvDB.setText(armyVehicle.getName());
+            }
+        });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArmyVehicle armyVehicle = LitePal.find(ArmyVehicle.class, 5);
+                List<ArmyVehicle> armyVehicle1 = LitePal.where("BDSimID=?", "5").find(ArmyVehicle.class);
+                if (armyVehicle == null) {
+                    Toast.makeText(MainActivity.this, "无此ID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                LitePal.delete(ArmyVehicle.class, 5);
+                Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!etID.getText().toString().equals("") && !"".equals(etName.getText().toString())) {
+                    ArmyVehicle armyVehicle = new ArmyVehicle();
+                    armyVehicle.setName(etName.getText().toString());
+                    armyVehicle.setBDSimID(Integer.parseInt(etID.getText().toString()));
+                    armyVehicle.setPosition(0);
+                    armyVehicle.save();
+//                    try {
+//                        armyVehicle.saveThrows();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//
+//                    }
+                    if (!armyVehicle.isSaved()) {
+                        Toast.makeText(MainActivity.this, "此ID已存在", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        });
+
+        btnShowVehicle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ArmyVehicleActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+}
