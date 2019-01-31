@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,24 +21,41 @@ import org.litepal.LitePal;
 import org.litepal.tablemanager.Connector;
 import org.litepal.tablemanager.callback.DatabaseListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
 
     Spinner spinPlanets;
     Button btnContacts, btnShow, btnDelete, btnSave, btnShowVehicle;
     EditText etID, etName;
     TextView tvDB;
+    Spinner spinVehicle;
+    SimpleAdapter simpleAdapter;
+    private List<Map<String, Object>> data;
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SQLiteDatabase db = LitePal.getDatabase();
         setContentView(R.layout.activity_main);
         spinPlanets = (Spinner) findViewById(R.id.spin_city);
         final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinPlanets.setAdapter(adapter);
 
+        spinVehicle = (Spinner) findViewById(R.id.spin_vehicle);
+
+        simpleAdapter = new SimpleAdapter(this, getData(), R.layout.item_vehicle_spin, new String[]{"img", "tvName", "tvId"},
+                new int[]{R.id.iv_spin_icon, R.id.tv_spin_name, R.id.tv_spin_sim});
+
+        simpleAdapter.setDropDownViewResource(R.layout.item_vehicle_spin);
+        spinVehicle.setAdapter(simpleAdapter);
+        spinVehicle.setOnItemSelectedListener(this);
         btnContacts = (Button) findViewById(R.id.btn_to_contacts);
         btnShow = (Button) findViewById(R.id.btn_show);
         tvDB = (TextView) findViewById(R.id.tv_vehicle);
@@ -45,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         etID = (EditText) findViewById(R.id.et_id);
         etName = (EditText) findViewById(R.id.et_name);
 //        SQLiteDatabase db = Connector.getDatabase();
-        SQLiteDatabase db = LitePal.getDatabase();
 //        ArmyVehicle armyVehicle1 = LitePal.find(ArmyVehicle.class, 1);
 //        if (armyVehicle1 != null ) {
 //            armyVehicle1.setName("车辆11一");
@@ -95,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         btnShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+
                 ArmyVehicle armyVehicle = LitePal.find(ArmyVehicle.class, 1);
                 if (armyVehicle == null) {
                     Toast.makeText(MainActivity.this, "无此ID", Toast.LENGTH_SHORT).show();
@@ -152,4 +171,66 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public List<Map<String,Object>> getData() {
+        List<ArmyVehicle> armyVehicleList = LitePal.where("bdsimid>?","0")
+                .order("bdsimid asc")
+                .find(ArmyVehicle.class);
+        data = new ArrayList<>();
+        if (armyVehicleList.size() == 0) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("img", R.mipmap.vehicle);
+            map.put("tvName", "未添加车辆编号");
+            map.put("tvId", 0);
+            data.add(map);
+            return data;
+        }
+
+        for (ArmyVehicle armyVehicle : armyVehicleList
+        ) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("img", R.mipmap.vehicle);
+            map.put("tvName", armyVehicle.getName());
+            map.put("tvId", armyVehicle.getBDSimID());
+            data.add(map);
+        }
+        return data;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart: ");
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "onResume: ");
+        simpleAdapter = new SimpleAdapter(this, getData(), R.layout.item_vehicle_spin, new String[]{"img", "tvName", "tvId"},
+                new int[]{R.id.iv_spin_icon, R.id.tv_spin_name, R.id.tv_spin_sim});
+        simpleAdapter.notifyDataSetChanged();
+        spinVehicle.setAdapter(simpleAdapter);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause: ");
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Map<String, Object> map = (HashMap) simpleAdapter.getItem(position);
+        int simId = ((Integer) map.get("tvId")).intValue();
+        Toast.makeText(this, "simId" + simId, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+
 }
